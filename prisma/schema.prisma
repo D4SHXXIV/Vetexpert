@@ -1,0 +1,123 @@
+// ============================================================
+// Prisma Schema
+// Sistem Pakar Diagnosa Awal Penyakit Kucing dan Anjing
+// Metode: Certainty Factor (CF)
+// Tech Stack: Next.js App Router | TypeScript | Prisma | MySQL
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ENUM
+// ============================================================
+
+enum JenisHewan {
+  KUCING
+  ANJING
+}
+
+// ============================================================
+// MODEL: Penyakit
+// Menyimpan data penyakit hewan beserta solusinya
+// ============================================================
+
+model Penyakit {
+  id            Int        @id @default(autoincrement())
+  kode_penyakit String     @unique @db.VarChar(20)
+  nama_penyakit String     @db.VarChar(255)
+  jenis_hewan   JenisHewan
+  deskripsi     String     @db.Text
+  solusi        String     @db.Text
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relasi: satu penyakit memiliki banyak rule CF
+  rules         RuleCF[]
+
+  @@map("penyakit")
+}
+
+// ============================================================
+// MODEL: Gejala
+// Menyimpan data gejala yang digunakan dalam diagnosa
+// ============================================================
+
+model Gejala {
+  id          Int      @id @default(autoincrement())
+  kode_gejala String   @unique @db.VarChar(20)
+  nama_gejala String   @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relasi: satu gejala memiliki banyak rule CF
+  rules             RuleCF[]
+  // Relasi: satu gejala dapat muncul di banyak detail konsultasi
+  detail_konsultasi DetailKonsultasi[]
+
+  @@map("gejala")
+}
+
+// ============================================================
+// MODEL: RuleCF
+// Basis pengetahuan: nilai CF pakar per pasangan penyakit-gejala
+// ============================================================
+
+model RuleCF {
+  id          Int      @id @default(autoincrement())
+  penyakit_id Int
+  gejala_id   Int
+  cf_pakar    Float    @db.Float // Nilai CF pakar: -1.0 s/d 1.0
+
+  // Relasi ke Penyakit
+  penyakit    Penyakit @relation(fields: [penyakit_id], references: [id], onDelete: Cascade)
+  // Relasi ke Gejala
+  gejala      Gejala   @relation(fields: [gejala_id], references: [id], onDelete: Cascade)
+
+  // Setiap kombinasi penyakit-gejala harus unik
+  @@unique([penyakit_id, gejala_id])
+  @@map("rule_cf")
+}
+
+// ============================================================
+// MODEL: Konsultasi
+// Menyimpan sesi konsultasi / diagnosa pengguna
+// ============================================================
+
+model Konsultasi {
+  id             Int        @id @default(autoincrement())
+  tanggal        DateTime   @default(now())
+  jenis_hewan    JenisHewan
+  hasil_diagnosa String     @db.VarChar(255) // Nama penyakit hasil diagnosa
+  cf_hasil       Float      @db.Float        // Nilai CF akhir hasil perhitungan
+
+  // Relasi: satu konsultasi memiliki banyak detail konsultasi
+  detail_konsultasi DetailKonsultasi[]
+
+  @@map("konsultasi")
+}
+
+// ============================================================
+// MODEL: DetailKonsultasi
+// Menyimpan gejala yang dipilih beserta nilai CF user per sesi
+// ============================================================
+
+model DetailKonsultasi {
+  id             Int        @id @default(autoincrement())
+  konsultasi_id  Int
+  gejala_id      Int
+  cf_user        Float      @db.Float // Nilai CF yang diberikan user: 0.0 s/d 1.0
+
+  // Relasi ke Konsultasi
+  konsultasi     Konsultasi @relation(fields: [konsultasi_id], references: [id], onDelete: Cascade)
+  // Relasi ke Gejala
+  gejala         Gejala     @relation(fields: [gejala_id], references: [id], onDelete: Restrict)
+
+  @@map("detail_konsultasi")
+}
