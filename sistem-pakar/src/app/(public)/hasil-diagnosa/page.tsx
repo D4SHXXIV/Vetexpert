@@ -1,190 +1,210 @@
-import Link from "next/link";
-import { CheckCircle, AlertTriangle, ArrowLeft, ArrowRight, Cat, Stethoscope } from "lucide-react";
+"use client";
 
-// Mock result - in real implementation this would come from DB/session
-const hasilDummy = {
-  penyakit: "Panleukopenia (Distemper Kucing)",
-  kode: "P001",
-  cf_hasil: 0.784,
-  persentase: 78.4,
-  jenis_hewan: "Kucing",
-  nama_hewan: "Mochi",
-  nama_pemilik: "Budi Santoso",
-  tanggal: new Date().toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }),
-  deskripsi:
-    "Panleukopenia kucing adalah penyakit virus yang sangat menular dan dapat menyebabkan kematian. Disebabkan oleh Feline Parvovirus (FPV) yang menyerang sel-sel darah putih, membuat sistem kekebalan tubuh melemah.",
-  solusi:
-    "Segera bawa ke dokter hewan untuk penanganan intensif. Terapi suportif meliputi cairan infus, antibiotik untuk infeksi sekunder, dan antiemetik untuk mengatasi muntah. Pisahkan dari hewan lain untuk mencegah penularan.",
-  gejala_ditemukan: [
-    { nama: "Nafsu makan berkurang", cf_user: 0.8 },
-    { nama: "Muntah-muntah", cf_user: 0.8 },
-    { nama: "Diare / feses cair", cf_user: 0.6 },
-    { nama: "Lemas / tidak aktif", cf_user: 1.0 },
-    { nama: "Demam (suhu > 39.5°C)", cf_user: 0.6 },
-  ],
-};
-
-function CFBar({ value }: { value: number }) {
-  const pct = Math.round(value * 100);
-  const color =
-    pct >= 70
-      ? "bg-red-500"
-      : pct >= 40
-      ? "bg-yellow-500"
-      : "bg-green-500";
-
-  return (
-    <div className="w-full bg-muted rounded-full h-2">
-      <div
-        className={`h-2 rounded-full transition-all duration-500 ${color}`}
-        style={{ width: `${pct}%` }}
-      />
-    </div>
-  );
-}
+import Link from 'next/link';
 
 export default function HasilDiagnosaPage() {
-  const pct = hasilDummy.persentase;
-  const level = pct >= 70 ? "Tinggi" : pct >= 40 ? "Sedang" : "Rendah";
-  const levelColor =
-    pct >= 70
-      ? "text-red-600 bg-red-50 border-red-200"
-      : pct >= 40
-      ? "text-yellow-700 bg-yellow-50 border-yellow-200"
-      : "text-green-700 bg-green-50 border-green-200";
+  // Mock data untuk keperluan UI. 
+  // Nanti dapat diganti dengan mem-fetch data ke database berdasarkan ID Konsultasi.
+  const diagnosisResult = {
+    namaPenyakit: "Feline Panleukopenia (FPV)",
+    persentase: 87.5,
+    deskripsi: "Feline panleukopenia (FPV) adalah penyakit virus yang sangat menular dan mengancam jiwa pada kucing. Penyakit ini menyerang sel-sel darah putih, sistem kekebalan tubuh, dan saluran pencernaan.",
+    solusi: "Segera bawa kucing ke dokter hewan untuk mendapatkan terapi cairan intravena, antibiotik, dan perawatan suportif intensif. Karantina kucing dari hewan lain.",
+    selectedSymptoms: [
+      "Muntah kuning atau berbusa",
+      "Diare berdarah",
+      "Demam tinggi mendadak",
+      "Kehilangan nafsu makan total",
+      "Lemas dan sangat lesu"
+    ],
+    otherDiseases: [
+      { nama: "Feline Calicivirus (FCV)", persentase: 45.2 },
+      { nama: "Feline Infectious Peritonitis (FIP)", persentase: 21.0 },
+      { nama: "Cacingan (Helminthiasis)", persentase: 15.5 },
+    ]
+  };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-gradient-to-br from-green-50 via-white to-emerald-50 py-10 px-4">
-      <div className="max-w-2xl mx-auto space-y-6">
-        {/* Header */}
+    <div className="min-h-screen bg-green-50/40 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto space-y-8">
+        
+        {/* Header Section */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <CheckCircle className="w-8 h-8 text-primary" />
+          <div className="inline-flex items-center justify-center p-3 bg-green-100 text-green-700 rounded-full mb-4 shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Hasil Diagnosa</h1>
-          <p className="text-muted-foreground mt-1 text-sm">{hasilDummy.tanggal}</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">Hasil Diagnosa</h1>
+          <p className="mt-2 text-gray-600">Berdasarkan gejala yang Anda pilih, berikut adalah hasil analisa sistem pakar kami.</p>
         </div>
 
-        {/* Patient info */}
-        <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-              <Cat className="w-5 h-5 text-green-600" />
+        {/* Main Diagnosis Card */}
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-green-100">
+          
+          {/* Top Hero Section */}
+          <div className="bg-green-600 px-6 py-10 sm:px-12 sm:py-12 text-white text-center relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 opacity-10">
+              <svg width="200" height="200" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="currentColor" />
+              </svg>
             </div>
-            <div>
-              <p className="font-semibold text-foreground">{hasilDummy.nama_hewan}</p>
-              <p className="text-xs text-muted-foreground">
-                Pemilik: {hasilDummy.nama_pemilik} &bull; {hasilDummy.jenis_hewan}
-              </p>
+            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 opacity-10">
+              <svg width="200" height="200" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="40" fill="currentColor" />
+              </svg>
             </div>
-          </div>
-        </div>
 
-        {/* Result card */}
-        <div className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-6 py-4">
-            <div className="flex items-center gap-2 text-green-100 text-xs mb-1">
-              <Stethoscope className="w-3.5 h-3.5" />
-              Kemungkinan Penyakit
-            </div>
-            <h2 className="text-xl font-bold text-white">{hasilDummy.penyakit}</h2>
-            <p className="text-green-200 text-xs mt-0.5">{hasilDummy.kode}</p>
-          </div>
-
-          <div className="p-6">
-            {/* CF Result */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-foreground">Nilai Kepercayaan (CF)</span>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-xs font-medium px-2 py-0.5 rounded-full border ${levelColor}`}
-                  >
-                    {level}
-                  </span>
-                  <span className="text-lg font-bold text-foreground">
-                    {hasilDummy.persentase.toFixed(1)}%
-                  </span>
+            <div className="relative z-10">
+              <h2 className="text-lg sm:text-xl font-medium text-green-100 mb-2">Kemungkinan Terbesar:</h2>
+              <h3 className="text-3xl sm:text-5xl font-extrabold tracking-tight mb-6">{diagnosisResult.namaPenyakit}</h3>
+              
+              <div className="flex flex-col items-center justify-center mt-6">
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+                  {/* Circular Progress Bar */}
+                  <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 36 36">
+                    {/* Background Circle */}
+                    <path
+                      className="text-green-800"
+                      strokeWidth="3"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    {/* Progress Circle */}
+                    <path
+                      className="text-white"
+                      strokeDasharray={`${diagnosisResult.persentase}, 100`}
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span className="text-4xl sm:text-5xl font-bold block">{diagnosisResult.persentase}%</span>
+                    <span className="text-sm font-medium text-green-100 mt-1 block">Tingkat Keyakinan</span>
+                  </div>
                 </div>
               </div>
-              <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                <div
-                  className="h-3 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-700"
-                  style={{ width: `${hasilDummy.persentase}%` }}
-                />
-              </div>
-              <p className="text-xs text-muted-foreground mt-1.5">
-                CF = {hasilDummy.cf_hasil.toFixed(4)} &bull; Skala 0 – 1
-              </p>
-            </div>
-
-            {/* Description */}
-            <div className="mb-5">
-              <h3 className="text-sm font-semibold text-foreground mb-2">Deskripsi Penyakit</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {hasilDummy.deskripsi}
-              </p>
-            </div>
-
-            {/* Solution */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-5">
-              <div className="flex items-center gap-2 text-green-800 font-semibold text-sm mb-2">
-                <CheckCircle className="w-4 h-4" />
-                Solusi & Penanganan
-              </div>
-              <p className="text-sm text-green-700 leading-relaxed">{hasilDummy.solusi}</p>
-            </div>
-
-            {/* Warning */}
-            <div className="flex items-start gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-xl">
-              <AlertTriangle className="w-4 h-4 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-yellow-700 leading-relaxed">
-                <strong>Peringatan:</strong> Hasil diagnosa ini hanya sebagai referensi awal.
-                Konsultasikan dengan dokter hewan untuk penanganan yang tepat.
-              </p>
             </div>
           </div>
-        </div>
 
-        {/* Gejala ditemukan */}
-        <div className="bg-white rounded-2xl border border-border p-5 shadow-sm">
-          <h3 className="text-sm font-semibold text-foreground mb-4">
-            Gejala yang Ditemukan ({hasilDummy.gejala_ditemukan.length})
-          </h3>
-          <div className="space-y-3">
-            {hasilDummy.gejala_ditemukan.map((g, i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm text-foreground">{g.nama}</span>
-                  <span className="text-xs text-muted-foreground font-mono">
-                    CF: {g.cf_user.toFixed(1)}
-                  </span>
+          <div className="px-6 py-8 sm:p-10 space-y-10">
+            {/* Description & Treatment Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4 text-green-700">
+                  <div className="bg-green-100 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-bold">Deskripsi Penyakit</h4>
                 </div>
-                <CFBar value={g.cf_user} />
+                <p className="text-gray-600 leading-relaxed text-sm sm:text-base">{diagnosisResult.deskripsi}</p>
               </div>
-            ))}
+
+              <div className="bg-green-50 rounded-2xl p-6 border border-green-100 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3 mb-4 text-green-700">
+                  <div className="bg-green-200/50 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-bold">Penanganan Awal</h4>
+                </div>
+                <p className="text-green-900 leading-relaxed font-medium text-sm sm:text-base">{diagnosisResult.solusi}</p>
+              </div>
+            </div>
+
+            <hr className="border-gray-100" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {/* Selected Symptoms */}
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                  </svg>
+                  Gejala yang Dipilih
+                </h4>
+                <ul className="space-y-3 bg-gray-50 p-5 rounded-xl border border-gray-100">
+                  {diagnosisResult.selectedSymptoms.map((symptom, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <svg className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-gray-700 font-medium text-sm sm:text-base">{symptom}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Other Diseases Ranking */}
+              <div>
+                <h4 className="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                  Kemungkinan Penyakit Lain
+                </h4>
+                <div className="space-y-3">
+                  {diagnosisResult.otherDiseases.map((disease, idx) => (
+                    <div key={idx} className="bg-white rounded-xl p-4 border border-gray-200 flex items-center justify-between shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600">
+                          {idx + 1}
+                        </div>
+                        <span className="font-semibold text-gray-800 text-sm sm:text-base">{disease.nama}</span>
+                      </div>
+                      <span className="bg-green-100 px-3 py-1 rounded-full text-sm font-bold text-green-700 border border-green-200">
+                        {disease.persentase}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <Link
-            href="/konsultasi"
-            className="flex items-center justify-center gap-2 flex-1 px-6 py-3 rounded-xl border border-border text-sm font-medium hover:bg-muted transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Konsultasi Ulang
-          </Link>
-          <Link
-            href="/"
-            className="flex items-center justify-center gap-2 flex-1 px-6 py-3 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
-          >
-            Selesai <ArrowRight className="w-4 h-4" />
+        {/* Disclaimer */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded-r-xl shadow-sm">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-6 w-6 text-yellow-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-bold text-yellow-800">Peringatan Penting</h3>
+              <p className="text-sm text-yellow-700 mt-1 leading-relaxed">
+                Sistem pakar ini hanya memberikan diagnosa awal berdasarkan gejala yang diamati. Sangat disarankan untuk segera mengunjungi dokter hewan terdekat guna mendapatkan penanganan medis yang akurat.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8 pb-10">
+          <button onClick={() => window.print()} className="bg-white text-green-700 border-2 border-green-600 font-bold py-3.5 px-8 rounded-xl hover:bg-green-50 transition-colors flex justify-center items-center gap-2 focus:ring-4 focus:ring-green-100">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            Cetak Hasil
+          </button>
+          <Link href="/konsultasi" className="bg-green-600 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg hover:bg-green-700 transition-colors flex justify-center items-center gap-2 focus:ring-4 focus:ring-green-300">
+            Konsultasi Ulang
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            </svg>
           </Link>
         </div>
+
       </div>
     </div>
   );

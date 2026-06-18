@@ -5,10 +5,12 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-emerald-50 py-20 sm:py-32">
-        {/* Decorative blobs */}
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-green-200/40 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 w-72 h-72 bg-emerald-200/30 rounded-full blur-3xl" />
+      <section 
+        className="relative overflow-hidden py-20 sm:py-32 bg-cover bg-center"
+        style={{ backgroundImage: "url('/person-doing-their-veterinary-job.webp')" }}
+      >
+        {/* Overlay for text readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/80 to-emerald-50/90" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 text-center">
           {/* Badge */}
@@ -37,12 +39,7 @@ export default function HomePage() {
               Mulai Konsultasi
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link
-              href="/admin"
-              className="flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white border border-border text-foreground font-semibold hover:bg-muted/50 transition-colors shadow-sm"
-            >
-              Panel Admin
-            </Link>
+
           </div>
 
           {/* Animal icons */}
