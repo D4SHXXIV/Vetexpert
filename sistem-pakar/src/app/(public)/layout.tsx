@@ -3,9 +3,11 @@ import { PublicNavbar } from "@/components/public/PublicNavbar";
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <PublicNavbar />
+      <div className="print:hidden">
+        <PublicNavbar />
+      </div>
       <main className="flex-1">{children}</main>
-      <footer className="bg-[hsl(var(--sidebar-bg))] text-[hsl(var(--sidebar-fg))] py-8">
+      <footer className="bg-[hsl(var(--sidebar-bg))] text-[hsl(var(--sidebar-fg))] py-8 print:hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center space-y-2">
           <p className="font-semibold text-white">VetExpert</p>
           <p className="text-sm text-[hsl(var(--sidebar-muted))]">

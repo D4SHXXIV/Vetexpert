@@ -11,6 +11,7 @@ import {
   X,
   PawPrint,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,21 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+
+  const handleLogout = async () => {
+    if (confirm("Apakah Anda yakin ingin keluar dari panel admin?")) {
+      try {
+        const res = await fetch("/api/auth/logout", { method: "POST" });
+        if (res.ok) {
+          window.location.href = "/login";
+        } else {
+          alert("Gagal logout, silakan coba lagi.");
+        }
+      } catch (err) {
+        console.error("Error logging out:", err);
+      }
+    }
+  };
 
   return (
     <>
@@ -118,14 +134,22 @@ export function AdminSidebar({ open, onClose }: AdminSidebarProps) {
         </nav>
 
         {/* Bottom */}
-        <div className="px-4 py-4 border-t border-[hsl(var(--sidebar-border))]">
+        <div className="px-4 py-4 border-t border-[hsl(var(--sidebar-border))] space-y-1.5">
           <Link
             href="/"
-            className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-[hsl(var(--sidebar-muted))] hover:bg-white/10 hover:text-white transition-all"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-[hsl(var(--sidebar-muted))] hover:bg-white/10 hover:text-white transition-all"
           >
             <PawPrint className="w-4 h-4" />
-            <span>Lihat Halaman Publik</span>
+            <span>Halaman Publik</span>
           </Link>
+          
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-red-300 hover:bg-red-950/30 hover:text-red-200 transition-all cursor-pointer text-left"
+          >
+            <LogOut className="w-4 h-4" />
+            <span>Keluar Admin</span>
+          </button>
         </div>
       </aside>
     </>

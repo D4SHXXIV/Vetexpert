@@ -93,6 +93,9 @@ model RuleCF {
 model Konsultasi {
   id             Int        @id @default(autoincrement())
   tanggal        DateTime   @default(now())
+  nama_pemilik   String     @db.VarChar(255)
+  nama_hewan     String     @db.VarChar(255)
+  usia_hewan     String     @db.VarChar(50)
   jenis_hewan    JenisHewan
   hasil_diagnosa String     @db.VarChar(255) // Nama penyakit hasil diagnosa
   cf_hasil       Float      @db.Float        // Nilai CF akhir hasil perhitungan
