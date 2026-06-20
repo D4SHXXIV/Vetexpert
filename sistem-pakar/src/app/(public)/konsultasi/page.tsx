@@ -10,6 +10,8 @@ export const metadata = {
   description: 'Konsultasi pakar kesehatan hewan',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function KonsultasiPage() {
   // Load symptoms from the database
   const symptoms = await prisma.gejala.findMany({

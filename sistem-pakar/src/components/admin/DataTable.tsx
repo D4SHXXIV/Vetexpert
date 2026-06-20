@@ -147,10 +147,10 @@ export function DataTable<T extends { id: number }>({
               }, [])
               .map((p, i) =>
                 p === "..." ? (
-                  <span key={i} className="px-2 text-muted-foreground">…</span>
+                  <span key={`ellipsis-${i}`} className="px-2 text-muted-foreground">…</span>
                 ) : (
                   <button
-                    key={p}
+                    key={`page-${p}`}
                     onClick={() => setPage(p as number)}
                     className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
                       page === p
